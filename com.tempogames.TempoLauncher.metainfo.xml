@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.tempogames.TempoLauncher</id>
+  
+  <name>Tempo Launcher</name>
+  <summary>Game Launcher</summary>
+  
+  <metadata_license>CC-BY-SA-3.0</metadata_license>
+  <project_license>GPL-2.0+</project_license>
+  
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+    <control>gamepad</control>
+  </supports>
+  
+  <description>
+    <p>
+      Game launcher for Tempo games.
+    </p>
+  </description>
+
+  <releases>
+    <release version="1" date="2025-06-28"/>
+  </releases>
+  
+  <launchable type="desktop-id">com.tempogames.TempoLauncher.desktop</launchable>
+</component>

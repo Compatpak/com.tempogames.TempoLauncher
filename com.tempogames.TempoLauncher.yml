@@ -1,0 +1,127 @@
+app-id: com.tempogames.TempoLauncher
+# branch: testing                            # Set branch for testing purposes (Default branch is master)
+sdk: org.winestaging.Sdk
+runtime: org.winestaging.Platform
+runtime-version: '10.10'
+# rename-desktop-file: TempoLauncher.desktop # Not needed because desktop file is already named com.tempogames.TempoLauncher
+# rename-icon: TempoLauncher                 # Not needed because icons are already named com.tempogames.TempoLauncher
+command: TempoLauncher.sh
+finish-args:
+  - --allow=multiarch                                      # Access to 32bit libraries (For running 32bit executables)
+  - --allow=devel                                          # Uses full SDK as the runtime (Access to more debugging tools and other libs) TODO: Figure out why allow=devel is needed to work correctly
+  # - --allow=bluetooth                                      # Access to bluetooth
+  # - --device=all                                           # Access to all devices
+  - --device=dri                                           # Access to DRI for OpenGL rendering
+  - --device=input                                         # Access to input devices (Controllers, etc)
+  # - --socket=wayland                                       # Access to Wayland socket for display
+  - --socket=fallback-x11                                  # Access to X11 socket for display (Incase wayland doesn't work)
+  - --socket=pulseaudio                                    # Access to pulse audio socket for sound
+  - --share=network                                        # Access to networking
+  - --share=ipc                                            # Access to host IPC namespace
+  - --talk-name=org.freedesktop.ScreenSaver                # Can talk to Screensaver (Allows preventing Screensaver)
+  # - --system-talk-name=org.freedesktop.UDisks2             # Can manage storage devices directly
+  # - --system-talk-name=org.freedesktop.NetworkManager      # Can manage network directly
+  # - --filesystem=host:ro                                   # Read access to common host directories
+  - --filesystem=xdg-run/app/com.discordapp.Discord:create # Read/write access to Discord's running instance (Required for setting up Discord rich presence)
+  # - --filesystem=xdg-run/discord-ipc-0:create              # Read/Write access to Discord's IPC socket (Required for setting up Discord rich presence)
+  - --filesystem=xdg-run/gamescope-0:ro                    # Read access to Gamescope's running instance (Required for Gamescope on Steam Deck)
+  # - --env=WINEARCH=win32                                   # Set Wine to 32bit mode (64bit mode is default)
+  - --env=WINEPREFIX=/var/data/wine                        # Set prefix location
+inherit-extensions:
+  - org.freedesktop.Platform.Compat.i386       # 32bit Linux compatibility
+  - org.freedesktop.Platform.Compat.i386.Debug # 32bit Linux compatibility debug
+  - org.freedesktop.Platform.GL                # OpenGL
+  - org.freedesktop.Platform.GL32              # 32bit OpenGL
+  - org.freedesktop.Platform.GL32.Debug        # 32bit OpenGL Debug
+  - org.freedesktop.Platform.VAAPI.Intel       # Intel VAAPI
+  - org.freedesktop.Platform.VAAPI.Intel.i386  # 32bit Intel VAAPI
+  - org.freedesktop.Platform.ffmpeg-full       # FFmpeg
+  - org.freedesktop.Platform.ffmpeg_full.i386  # 32bit FFmpeg
+modules:
+  # Setting up required stuff
+  - name: Setup
+    buildsystem: simple
+    build-commands:
+      - |
+        # Make directories needed by extensions
+        mkdir -p ${FLATPAK_DEST}/lib/i386-linux-gnu                        # 32bit Linux compatibility
+        mkdir -p ${FLATPAK_DEST}/lib/debug/lib/i386-linux-gnu              # 32bit Linux compatibility debug
+        mkdir -p ${FLATPAK_DEST}/lib/x86_64-linux-gnu/GL                   # OpenGL
+        mkdir -p ${FLATPAK_DEST}/lib/i386-linux-gnu/GL                     # 32bit OpenGL
+        mkdir -p ${FLATPAK_DEST}/lib/debug/lib/i386-linux-gnu/GL           # 32bit OpenGL Debug
+        mkdir -p ${FLATPAK_DEST}/lib/i386-linux-gnu/dri/intel-vaapi-driver # 32bit Intel VAAPI
+        mkdir -p ${FLATPAK_DEST}/lib/ffmpeg                                # FFmpeg
+        mkdir -p ${FLATPAK_DEST}/lib32/ffmpeg                              # 32bit FFmpeg
+        mkdir -p ${FLATPAK_DEST}/extensions
+
+        mkdir -p ${FLATPAK_DEST}/bin                                                                               # Make directory needed for binaries
+        mkdir -p ${FLATPAK_DEST}/share/applications/                                                               # Make directory for desktop files
+        mkdir -p ${FLATPAK_DEST}/share/icons/hicolor/{16x16,24x24,32x32,48x48,64x64,128x128,256x256,scalable}/apps # Make directories needed for icons
+        
+  - name: TempoLauncher
+    sources:
+      # Executable that installs the Tempo Launcher (Downloaded to /app/extra when user is installing because of extra-data)
+      - type: extra-data
+        url: https://cdn.playthebazaar.com/launcher-0ca5d6/Tempo%20Launcher%20-%20Beta%20Setup%201.0.4.exe
+        sha256: de6dbbc249e4600217ea6e0cfda2fbf3ac8a26e56f9a62fb287ccb6f0df11436                           # Hash that is used to confirm the correct file was downloaded
+        size: 97075840                                                                                     # Size of executable (Found with "wc --bytes < filename")
+        filename: TempoLauncherSetup.exe
+
+      # Script that is automatically ran when user is installing, after extra-data is downloaded
+      - type: script
+        dest-filename: apply_extra # This specific name is needed
+        commands:
+          - |
+            # NOTE: ${FLATPAK_DEST} is not available here because this is ran after the Flatpak is built, while the user is installing
+            wrestool -x --output=TempoLauncher.ico -t14 TempoLauncherSetup.exe # Extract ico from exe (Uses Icoutils module from org.winestaging.Sdk)
+            magick TempoLauncher.ico TempoLauncher256x256.png                  # Convert ico to png (Uses ImageMagick module from org.winestaging.Sdk)
+            # magick TempoLauncher.ico TempoLauncher.svg                         # Convert ico to svg
+
+            # Resize TempoLauncher icon to standard Linux icon sizes (Uses Image Magick binary from parent)
+            magick TempoLauncher256x256.png -resize 128x128 TempoLauncher128x128.png
+            magick TempoLauncher256x256.png -resize 64x64 TempoLauncher64x64.png
+            magick TempoLauncher256x256.png -resize 48x48 TempoLauncher48x48.png
+            magick TempoLauncher256x256.png -resize 32x32 TempoLauncher32x32.png
+            magick TempoLauncher256x256.png -resize 24x24 TempoLauncher24x24.png
+            magick TempoLauncher256x256.png -resize 16x16 TempoLauncher16x16.png
+
+            # Install TempoLauncher icons to appropriate directories
+            install -Dm644 TempoLauncher16x16.png ./export/share/icons/hicolor/16x16/apps/com.tempogames.TempoLauncher.png
+            install -Dm644 TempoLauncher24x24.png ./export/share/icons/hicolor/24x24/apps/com.tempogames.TempoLauncher.png
+            install -Dm644 TempoLauncher32x32.png ./export/share/icons/hicolor/32x32/apps/com.tempogames.TempoLauncher.png
+            install -Dm644 TempoLauncher48x48.png ./export/share/icons/hicolor/48x48/apps/com.tempogames.TempoLauncher.png
+            install -Dm644 TempoLauncher64x64.png ./export/share/icons/hicolor/64x64/apps/com.tempogames.TempoLauncher.png
+            install -Dm644 TempoLauncher128x128.png ./export/share/icons/hicolor/128x128/apps/com.tempogames.TempoLauncher.png
+            install -Dm644 TempoLauncher256x256.png ./export/share/icons/hicolor/256x256/apps/com.tempogames.TempoLauncher.png 
+
+      - type: file
+        path: Registry/WineGraphics.reg
+
+      - type: file
+        path: Scripts/TempoLauncher.sh
+      
+      # Placeholder icons (For storefront metadata) (Will be replaced with extracted/converted icon from executable when user installs)
+      - type: dir
+        path: Icons
+
+      - type: file
+        path: DesktopEntries/com.tempogames.TempoLauncher.desktop
+
+      - type: file
+        path: com.tempogames.TempoLauncher.metainfo.xml
+    buildsystem: simple
+    build-commands:
+      - |
+        ln -s ${FLATPAK_DEST}/extra/TempoLauncherSetup.exe ${FLATPAK_DEST}/bin/TempoLauncherSetup.exe                                                 # Symlink to executable that will be downloaded to /app/extra when user installs
+        install -Dm744 apply_extra -t ${FLATPAK_DEST}/bin/                                                                                            # Install script that will be ran automatically when user installs after extra-data sources are downloaded
+        install -Dm644 WineGraphics.reg -t ${FLATPAK_DEST}/share                                                                                      # Install Windows registry keys that will be applied to Wine prefix
+        install -Dm744 TempoLauncher.sh -t ${FLATPAK_DEST}/bin/                                                                                       # Install script that will act as the launch command when the Flatpak it is ran
+        install -Dm644 CompatpakSmoothTempoLauncherBlack16x16.png ${FLATPAK_DEST}/share/icons/hicolor/16x16/apps/com.tempogames.TempoLauncher.png     # Install placeholder icon (Will be replaced with extracted/converted icon from executable when user installs)
+        install -Dm644 CompatpakSmoothTempoLauncherBlack24x24.png ${FLATPAK_DEST}/share/icons/hicolor/24x24/apps/com.tempogames.TempoLauncher.png     # Install placeholder icon (Will be replaced with extracted/converted icon from executable when user installs)
+        install -Dm644 CompatpakSmoothTempoLauncherBlack32x32.png ${FLATPAK_DEST}/share/icons/hicolor/32x32/apps/com.tempogames.TempoLauncher.png     # Install placeholder icon (Will be replaced with extracted/converted icon from executable when user installs)
+        install -Dm644 CompatpakSmoothTempoLauncherBlack48x48.png ${FLATPAK_DEST}/share/icons/hicolor/48x48/apps/com.tempogames.TempoLauncher.png     # Install placeholder icon (Will be replaced with extracted/converted icon from executable when user installs)
+        install -Dm644 CompatpakSmoothTempoLauncherBlack64x64.png ${FLATPAK_DEST}/share/icons/hicolor/64x64/apps/com.tempogames.TempoLauncher.png     # Install placeholder icon (Will be replaced with extracted/converted icon from executable when user installs)
+        install -Dm644 CompatpakSmoothTempoLauncherBlack128x128.png ${FLATPAK_DEST}/share/icons/hicolor/128x128/apps/com.tempogames.TempoLauncher.png # Install placeholder icon (Will be replaced with extracted/converted icon from executable when user installs)
+        install -Dm644 CompatpakSmoothTempoLauncherBlack256x256.png ${FLATPAK_DEST}/share/icons/hicolor/256x256/apps/com.tempogames.TempoLauncher.png # Install placeholder icon (Will be replaced with extracted/converted icon from executable when user installs)
+        install -Dm644 com.tempogames.TempoLauncher.desktop -t ${FLATPAK_DEST}/share/applications                                                     # Install desktop file that will be exported for desktop environments to use in their App menus
+        install -Dm644 com.tempogames.TempoLauncher.metainfo.xml -t ${FLATPAK_DEST}/share/metainfo                                                    # Install metainfo

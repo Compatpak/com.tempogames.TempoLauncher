@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Tempo Launcher (Unofficial)
+GenericName=Tempo Launcher
+Comment=Game Launcher
+Exec=TempoLauncher.sh
+Categories=Game;
+Icon=com.tempogames.TempoLauncher
+Keywords=Tempo Launcher;The Bazaar;
+Terminal=true

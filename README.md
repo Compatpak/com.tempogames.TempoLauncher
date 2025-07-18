@@ -1,4 +1,4 @@
-# Tempo Launcher (Unofficial)
+# Tempo Launcher
 ## Building
 > **_NOTE:_**  With org.winestaging.Sdk and org.winestaging.Platform installed.
 ```console

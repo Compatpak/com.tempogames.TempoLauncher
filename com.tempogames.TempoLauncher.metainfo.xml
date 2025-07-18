@@ -1,28 +1,119 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2025 Compatpak -->
 <component type="desktop-application">
   <id>com.tempogames.TempoLauncher</id>
-  
+  <metadata_license>CC-BY-SA-3.0</metadata_license>
+  <project_license>GPL-3.0-only</project_license>
   <name>Tempo Launcher</name>
   <summary>Game Launcher</summary>
-  
-  <metadata_license>CC-BY-SA-3.0</metadata_license>
-  <project_license>GPL-2.0+</project_license>
-  
-  <supports>
-    <control>pointing</control>
-    <control>keyboard</control>
-    <control>gamepad</control>
-  </supports>
-  
+
+  <developer id="io.github">
+    <name>Compatpak</name>
+  </developer>
+
   <description>
     <p>
-      Game launcher for Tempo games.
+      Tempo is a launcher for all of your Tempo games.
     </p>
   </description>
 
-  <releases>
-    <release version="1" date="2025-06-28"/>
-  </releases>
-  
   <launchable type="desktop-id">com.tempogames.TempoLauncher.desktop</launchable>
+
+  <provides>
+    <binary>TempoLauncherSetup.exe</binary>
+  </provides>
+
+  <categories>
+    <category>Game</category>
+    <category>Network</category>
+  </categories>
+
+  <keywords>
+    <keyword>Tempo</keyword>
+    <keyword>Tempo Storm</keyword>
+    <keyword>Tempo Launcher</keyword>
+    <keyword>The Bazaar</keyword>
+  </keywords>
+
+  <icon type="stock">com.tempogames.TempoLauncher</icon>
+
+  <project_group>Compatpak</project_group>
+
+  <branding>
+    <color type="primary" scheme_preference="light">#2721ff</color>
+    <color type="primary" scheme_preference="dark">#0672be</color>
+  </branding>
+
+  <!-- Uses https://hughsie.github.io/oars/generate.html to generate -->
+  <content_rating type="oars-1.0">
+    <content_attribute id="violence-cartoon">mild</content_attribute>
+    <content_attribute id="drugs-alcohol">mild</content_attribute>
+    <content_attribute id="language-humor">mild</content_attribute>
+    <content_attribute id="money-purchasing">intense</content_attribute>
+    <content_attribute id="money-gambling">intense</content_attribute>
+  </content_rating>
+
+
+  <url type="homepage">https://compatpak.github.io/repo/</url>
+  <url type="donation">https://www.patreon.com/c/Compatpak</url>
+  <url type="donation">https://ko-fi.com/compatpak</url>
+  <url type="contact">https://discord.gg/P7DZVjDSUa</url>
+  <!-- <url type="faq">https://example.org/faq</url> -->
+  <!-- <url type="translate">https://example.org/translate</url> -->
+  <url type="bugtracker">https://github.com/Compatpak/com.tempogames.TempoLauncher/issues</url>
+  <url type="contribute">https://github.com/Compatpak/com.tempogames.TempoLauncher</url>
+  <url type="vcs-browser">https://github.com/Compatpak/com.tempogames.TempoLauncher</url>
+
+
+  <screenshots>
+    <screenshot type="default">
+      <caption>Tempo Launcher</caption>
+      <image>https://github.com/Compatpak/com.tempogames.TempoLauncher/blob/main/Screenshots/TempoLauncher.png?raw=true</image>
+    </screenshot>
+    <screenshot>
+      <caption>The Bazaar Menu</caption>
+      <image>https://github.com/Compatpak/com.tempogames.TempoLauncher/blob/main/Screenshots/TheBazaarMenu.png?raw=true</image>
+    </screenshot>
+    <screenshot>
+      <caption>The Bazaar Battle</caption>
+      <image>https://github.com/Compatpak/com.tempogames.TempoLauncher/blob/main/Screenshots/TheBazaarBattle.png?raw=true</image>
+    </screenshot>
+    <screenshot>
+      <caption>The Bazaar Victory</caption>
+      <image>https://github.com/Compatpak/com.tempogames.TempoLauncher/blob/main/Screenshots/TheBazaarVictory.png?raw=true</image>
+    </screenshot>
+  </screenshots>
+
+  <releases>
+    <release version="1" date="2025-06-28">
+      <!-- <url type="details">https://example.org/changelog.html#version_1.0.1</url> -->
+      <!-- <description>
+        <p>Release description</p>
+          <ul>
+            <li>List of changes</li>
+            <li>List of changes</li>
+          </ul>
+      </description> -->
+    </release>
+  </releases>
+
+  <!-- <translation type="gettext">gnome-builder</translation>
+  <translation type="qt">qtdemo</translation> -->
+
+  <requires>
+    <!-- <control>keyboard</control> -->
+    <!-- <control>pointing</control> -->
+    <!-- <control>gamepad</control> -->
+    <!-- <control>touch</control> -->
+    <display_length compare="ge">360</display_length> <!-- Mobile/tablet AND desktop supported -->
+    <!-- <display_length compare="ge">768</display_length> --> <!-- ONLY desktop supported -->
+    <!-- <display_length compare="le">1279</display_length> --> <!-- ONLY mobile/tablet supported -->
+  </requires>
+
+  <recommends>
+    <control>keyboard</control>
+    <control>pointing</control>
+    <!-- <control>gamepad</control> -->
+    <!-- <control>touch</control> -->
+  </recommends>
 </component>

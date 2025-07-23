@@ -2,7 +2,7 @@
 ## Building
 > **_NOTE:_**  With org.winestaging.Sdk and org.winestaging.Platform installed.
 ```console
-flatpak run org.flatpak.Builder build-dir --repo=../Compatpak/repo --force-clean com.tempogames.TempoLauncher.yml
+flatpak-builder build-dir --repo=../Compatpak/repo --force-clean --disable-rofiles-fuse --gpg-sign=GPGKey com.tempogames.TempoLauncher.yml
 ```
 ## Installing
 ```console

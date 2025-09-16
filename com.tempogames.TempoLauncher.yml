@@ -2,7 +2,7 @@ app-id: com.tempogames.TempoLauncher
 # branch: testing                            # Set branch for testing purposes (Default branch is master)
 sdk: org.winestaging.Sdk
 runtime: org.winestaging.Platform
-runtime-version: '10.10'
+runtime-version: '10.15'
 # rename-desktop-file: TempoLauncher.desktop # Not needed because desktop file is already in reversed domain name format
 # rename-icon: TempoLauncher                 # Not needed because icons are already in reversed domain name format
 command: TempoLauncher.sh
@@ -62,15 +62,15 @@ modules:
     sources:
       # Executable that installs the Tempo Launcher (Downloaded to /app/extra when user is installing because of extra-data)
       - type: extra-data
-        url: https://cdn.playthebazaar.com/launcher-0ca5d6/Tempo%20Launcher%20-%20Beta%20Setup%201.0.4.exe
-        sha256: de6dbbc249e4600217ea6e0cfda2fbf3ac8a26e56f9a62fb287ccb6f0df11436                           # Hash that is used to confirm the correct file was downloaded
-        size: 97075840                                                                                     # Size of executable (Found with "wc --bytes < filename")
+        url: https://data.playthebazaar.com/launcher/1.0.12/win32/x64/installer.exe
+        sha256: 6c640e9c17fdaa69ef84b9469e4b0dbf100359d1c9ee84d64003d10644ef6723                           # Hash that is used to confirm the correct file was downloaded
+        size: 98114368                                                                                     # Size of executable (Found with "wc --bytes < filename")
         x-checker-data: # Checks for a newer version when org.flathub.flatpak-external-data-checker is ran on this file
           # TODO: Figure out why version-pattern is not matching anything in url
           type: html
-          url: https://www.playthebazaar.com/download                                                                            # Use this file to...
-          version-pattern: (\d[\d\.]+\d).exe                                                                                     # Search for this regex pattern
-          url-template: https://cdn.playthebazaar.com/launcher-0ca5d6/Tempo%20Launcher%20-%20Beta%20Setup%20$version.exe         # Compare this file (found using regex match from above) to the source to see if there is a newer version
+          url: https://www.playthebazaar.com                                                                                     # Use this file to...
+          version-pattern: (\d[\d\.]+\d)                                                                                         # Search for this regex pattern
+          url-template: https://data.playthebazaar.com/launcher/$version/win32/x64/installer.exe                                 # Compare this file (found using regex match from above) to the source to see if there is a newer version
         filename: TempoLauncherSetup.exe
 
       # Script that is automatically ran when user is installing, after extra-data is downloaded

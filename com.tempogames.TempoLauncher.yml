@@ -2,7 +2,7 @@ app-id: com.tempogames.TempoLauncher
 # branch: testing                            # Set branch for testing purposes (Default branch is master)
 sdk: org.winestaging.Sdk
 runtime: org.winestaging.Platform
-runtime-version: '10.15'
+runtime-version: '11.0'
 # rename-desktop-file: TempoLauncher.desktop # Not needed because desktop file is already in reversed domain name format
 # rename-icon: TempoLauncher                 # Not needed because icons are already in reversed domain name format
 command: TempoLauncher.sh

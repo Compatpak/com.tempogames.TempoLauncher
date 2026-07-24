@@ -2,22 +2,26 @@ app-id: com.tempogames.TempoLauncher
 # branch: testing                            # Set branch for testing purposes (Default branch is master)
 sdk: org.winestaging.Sdk
 runtime: org.winestaging.Platform
-runtime-version: '11.0'
+runtime-version: '11.13'
 # rename-desktop-file: TempoLauncher.desktop # Not needed because desktop file is already in reversed domain name format
 # rename-icon: TempoLauncher                 # Not needed because icons are already in reversed domain name format
 command: TempoLauncher.sh
 finish-args:
   - --allow=multiarch                                      # Access to 32bit libraries (For running 32bit executables)
   - --allow=devel                                          # Uses full SDK as the runtime (Access to more debugging tools and other libs) TODO: Figure out why allow=devel is needed to work correctly
+  # - --allow=per-app-dev-shm
   # - --allow=bluetooth                                      # Access to bluetooth
   # - --device=all                                           # Access to all devices
   - --device=dri                                           # Access to DRI for OpenGL rendering
   - --device=input                                         # Access to input devices (Controllers, etc)
+  - --socket=x11                                           # Access to X11 socket for display
   # - --socket=wayland                                       # Access to Wayland socket for display
-  - --socket=fallback-x11                                  # Access to X11 socket for display (Incase wayland doesn't work)
+  # - --socket=fallback-x11                                  # Access to X11 socket as a fallback for display (Used only in conjuction with socket=wayland in case the user doesn't have wayland)
   - --socket=pulseaudio                                    # Access to pulse audio socket for sound
+  # - --socket=session-bus
   - --share=network                                        # Access to networking
   - --share=ipc                                            # Access to host IPC namespace
+  # - --talk-name=org.freedesktop.Flatpak
   - --talk-name=org.freedesktop.ScreenSaver                # Can talk to Screensaver (Allows preventing Screensaver)
   # - --system-talk-name=org.freedesktop.UDisks2             # Can manage storage devices directly
   # - --system-talk-name=org.freedesktop.NetworkManager      # Can manage network directly
@@ -35,8 +39,8 @@ inherit-extensions:
   - org.freedesktop.Platform.GL32.Debug        # 32bit OpenGL Debug
   - org.freedesktop.Platform.VAAPI.Intel       # Intel VAAPI
   - org.freedesktop.Platform.VAAPI.Intel.i386  # 32bit Intel VAAPI
-  - org.freedesktop.Platform.ffmpeg-full       # FFmpeg
-  - org.freedesktop.Platform.ffmpeg_full.i386  # 32bit FFmpeg
+  - org.freedesktop.Platform.codecs-extra      # Codecs (Replaces FFMPEG-full in 25.08)
+  - org.freedesktop.Platform.codecs_extra.i386 # 32bit Codecs (Replaces FFMPEG-full in 25.08)
 modules:
   # Setting up required stuff
   - name: Setup
@@ -50,6 +54,8 @@ modules:
         mkdir -p ${FLATPAK_DEST}/lib/i386-linux-gnu/GL                     # 32bit OpenGL
         mkdir -p ${FLATPAK_DEST}/lib/debug/lib/i386-linux-gnu/GL           # 32bit OpenGL Debug
         mkdir -p ${FLATPAK_DEST}/lib/i386-linux-gnu/dri/intel-vaapi-driver # 32bit Intel VAAPI
+        mkdir -p ${FLATPAK_DEST}/lib/codecs                                # Codecs (replaces ffmpeg-full & openh264)
+        mkdir -p ${FLATPAK_DEST}/lib32/codecs                              # 32bit Codecs
         mkdir -p ${FLATPAK_DEST}/lib/ffmpeg                                # FFmpeg
         mkdir -p ${FLATPAK_DEST}/lib32/ffmpeg                              # 32bit FFmpeg
         mkdir -p ${FLATPAK_DEST}/extensions
@@ -63,14 +69,14 @@ modules:
       # Executable that installs the Tempo Launcher (Downloaded to /app/extra when user is installing because of extra-data)
       - type: extra-data
         url: https://data.playthebazaar.com/launcher/1.0.12/win32/x64/installer.exe
-        sha256: 6c640e9c17fdaa69ef84b9469e4b0dbf100359d1c9ee84d64003d10644ef6723                           # Hash that is used to confirm the correct file was downloaded
-        size: 98114368                                                                                     # Size of executable (Found with "wc --bytes < filename")
+        sha256: 6c640e9c17fdaa69ef84b9469e4b0dbf100359d1c9ee84d64003d10644ef6723    # Hash that is used to confirm the correct file was downloaded
+        size: 98114368                                                              # Size of executable (Found with "wc --bytes < filename")
         x-checker-data: # Checks for a newer version when org.flathub.flatpak-external-data-checker is ran on this file
           # TODO: Figure out why version-pattern is not matching anything in url
           type: html
-          url: https://www.playthebazaar.com                                                                                     # Use this file to...
-          version-pattern: (\d[\d\.]+\d)                                                                                         # Search for this regex pattern
-          url-template: https://data.playthebazaar.com/launcher/$version/win32/x64/installer.exe                                 # Compare this file (found using regex match from above) to the source to see if there is a newer version
+          url: https://www.playthebazaar.com                                                     # Use this file to...
+          version-pattern: (\d[\d\.]+\d)                                                         # Search for this regex pattern
+          url-template: https://data.playthebazaar.com/launcher/$version/win32/x64/installer.exe # Compare this file (found using regex match from above) to the source to see if there is a newer version
         filename: TempoLauncherSetup.exe
 
       # Script that is automatically ran when user is installing, after extra-data is downloaded
@@ -98,7 +104,7 @@ modules:
             install -Dm644 TempoLauncher48x48.png ./export/share/icons/hicolor/48x48/apps/com.tempogames.TempoLauncher.png
             install -Dm644 TempoLauncher64x64.png ./export/share/icons/hicolor/64x64/apps/com.tempogames.TempoLauncher.png
             install -Dm644 TempoLauncher128x128.png ./export/share/icons/hicolor/128x128/apps/com.tempogames.TempoLauncher.png
-            install -Dm644 TempoLauncher256x256.png ./export/share/icons/hicolor/256x256/apps/com.tempogames.TempoLauncher.png 
+            install -Dm644 TempoLauncher256x256.png ./export/share/icons/hicolor/256x256/apps/com.tempogames.TempoLauncher.png
 
       - type: file
         path: Registry/WineGraphics.reg

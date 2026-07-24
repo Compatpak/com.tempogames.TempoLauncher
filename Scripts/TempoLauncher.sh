@@ -1,4 +1,12 @@
 #!/bin/sh
+LOG="/var/data/log.txt"   # File for logging the output
+
+# Re-exec the script under a real pseudo-terminal on first run (This avoids a Wine/Electron/Javascript error that otherwise requires it to be launched from the terminal)
+if [ -z "$UNDER_SCRIPT" ]; then
+    export UNDER_SCRIPT=1
+    exec script -qfec "$0 $(printf '%q ' "$@")" "$LOG"
+fi
+
 echo "Running Wineboot"
 wineboot
 
@@ -8,6 +16,15 @@ winecfg -v win10
 echo "Updating registry"
 wine regedit /app/share/WineGraphics.reg
 sleep 3
+
+# echo "Switching to D7VK"
+# /usr/bin/WineToD7VK.sh
+
+# echo "Switching to DXVK"
+# /usr/bin/WineToDXVK.sh
+
+# echo "Switching to VKD3D-Proton"
+# /usr/bin/WineToVKD3D-Proton.sh
 
 echo "Setting up Discord rich presence"
 for i in {0..9}; do
